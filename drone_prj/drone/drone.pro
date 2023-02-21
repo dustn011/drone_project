@@ -11,11 +11,11 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     drone.cpp \
-    movethread.cpp
+    thread.cpp
 
 HEADERS += \
     drone.h \
-    movethread.h
+    thread.h
 
 FORMS += \
     drone.ui

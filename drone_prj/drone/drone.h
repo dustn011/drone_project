@@ -1,8 +1,6 @@
 #ifndef DRONE_H
 #define DRONE_H
-#include "movethread.h"
 
-#include <iostream>
 #include <QMainWindow>
 #include <QWidget>
 #include <QDebug>
@@ -10,17 +8,11 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QPropertyAnimation>
-#include <QThread>
 #include <QApplication>
 
-#include <QString>
-#include <QTimer>
-#include <QVector>
-#include <QCheckBox>
-#include <QComboBox>
-#include <QList>
-
-
+#include <iostream>
+#include <thread>
+#include "thread.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Drone; }
@@ -35,23 +27,41 @@ public:
     ~Drone();
 
 private slots:
+    // 상하좌우 이동 기능
+    void moving_forward(int data);
+//    void moving_backward(int data);
+//    void moving_left(int data);
+//    void moving_right(int data);
+
+    // 스레드로 작용할 함수들(상하좌우 버튼)
+    void on_btn_forward_pressed();
+    void on_btn_forward_released();
+
+//    void on_btn_backward_pressed();
+//    void on_btn_backward_released();
+
+//    void on_btn_left_pressed();
+//    void on_btn_left_released();
+
+//    void on_btn_right_pressed();
+//    void on_btn_right_released();
+
     // 상승, 하강 버튼
     void on_btn_ascent_clicked();
     void on_btn_descent_clicked();
 
-    // 상하좌우 이동 버튼
-    void on_btn_forward_clicked();
-    void on_btn_backward_clicked();
+    // 버튼
     void on_btn_left_clicked();
     void on_btn_right_clicked();
 
-    // 상하좌우 이동 (스레드로)
-    void on_btn_forward_pressed();
-    void on_btn_forward_released();
+
 
 private:
     Ui::Drone *ui;
-    ForwardThread * movethread;
+    Thread * forward_thread;
+    Thread * backward_thread;
+    Thread * left_thread;
+    Thread * right_thread;
 };
 
 
