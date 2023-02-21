@@ -19,6 +19,7 @@ void Thread::run()
         }
         emit Send(i);   // Send 시그널 함수로 i를 송신
         i++;
-        Sleep(500);
+        Sleep(70);
     }
+    return;
 }

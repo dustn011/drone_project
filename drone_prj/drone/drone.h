@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QPropertyAnimation>
 #include <QApplication>
+#include <QTimer>
 
 #include <iostream>
 #include <thread>
@@ -29,39 +30,38 @@ public:
 private slots:
     // 상하좌우 이동 기능
     void moving_forward(int data);
-//    void moving_backward(int data);
-//    void moving_left(int data);
-//    void moving_right(int data);
+    void moving_backward(int data);
+    void moving_left(int data);
+    void moving_right(int data);
+
+    // 상승, 하강 기능
+    void moving_ascent(int data);
+    void moving_descent(int data);
 
     // 스레드로 작용할 함수들(상하좌우 버튼)
     void on_btn_forward_pressed();
     void on_btn_forward_released();
 
-//    void on_btn_backward_pressed();
-//    void on_btn_backward_released();
+    void on_btn_backward_pressed();
+    void on_btn_backward_released();
 
-//    void on_btn_left_pressed();
-//    void on_btn_left_released();
+    void on_btn_left_pressed();
+    void on_btn_left_released();
 
-//    void on_btn_right_pressed();
-//    void on_btn_right_released();
+    void on_btn_right_pressed();
+    void on_btn_right_released();
 
     // 상승, 하강 버튼
-    void on_btn_ascent_clicked();
-    void on_btn_descent_clicked();
+    void on_btn_ascent_pressed();
+    void on_btn_ascent_released();
 
-    // 버튼
-    void on_btn_left_clicked();
-    void on_btn_right_clicked();
-
-
+    void on_btn_descent_pressed();
+    void on_btn_descent_released();
 
 private:
     Ui::Drone *ui;
-    Thread * forward_thread;
-    Thread * backward_thread;
-    Thread * left_thread;
-    Thread * right_thread;
+    Thread * thread;
+    int drone_height = 0;
 };
 
 
