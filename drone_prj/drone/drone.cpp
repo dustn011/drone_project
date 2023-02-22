@@ -10,9 +10,17 @@ Drone::Drone(QWidget *parent)
     thread = new Thread(this);      // Thread 클래스의 객체 만들기
 
     ui->verticalSlider_height->setValue(drone_height);
+
+    // ui 사용자가 조종? 못하게함
     ui->verticalSlider_height->setDisabled(true);
     ui->dial_speed->setDisabled(true);
+
     connect(ui->progressBar_fuel, &QProgressBar::valueChanged, this, &Drone::check_position);
+
+    ui->lineEdit_ranking->setMaxLength(5);      // lineedit 길이제한
+    connect(ui->lineEdit_ranking, &QLineEdit::returnPressed, this, &Drone::update_rank);
+    connect(ui->btn_ok, &QPushButton::clicked, this, &Drone::update_rank);
+
 }
 
 Drone::~Drone()
@@ -23,8 +31,10 @@ Drone::~Drone()
 // 전진 버튼 누르고 있을 때 드론 y축 증가(스레드 진행)
 void Drone::on_btn_forward_pressed()
 {
+    // 연료가 없을 때
     if(drone_fuel == 0)
         QMessageBox::information(this, "NO!", "You are not have enough fuel! :(");
+    // 드론이 떠있지 않을 때
     else if(drone_height == 0)
         QMessageBox::information(this, "NO!", "The drone have too low height! :(");
     else
@@ -37,9 +47,9 @@ void Drone::on_btn_forward_pressed()
 // 전진 버튼 때면 드론 정지(스레드 멈춤)
 void Drone::on_btn_forward_released()
 {
-    thread->th_end = true;
-    disconnect(thread, SIGNAL(Send(int)), this, SLOT(moving_forward(int)));
-    ui->dial_speed->setValue(0);
+    thread->th_end = true;      // 스레드 종료
+    disconnect(thread, SIGNAL(Send(int)), this, SLOT(moving_forward(int)));     // 연결 함수 끊어버리기
+    ui->dial_speed->setValue(0);        // 미터기? 초기화
 }
 
 //스레드 누르는 동안 y축 이동할 슬롯 함수
@@ -54,13 +64,13 @@ void Drone::moving_forward(int data)
     }
     else
     {
-        ui->lbl_drone->move(labelPos.x(), labelPos.y()-5);
-        ui->dial_speed->setValue(data*5);
+        ui->lbl_drone->move(labelPos.x(), labelPos.y()-5);  // 드론 위치 이동
+        ui->dial_speed->setValue(data*5);   // 미터기 상승
 
-        travel_distance += 5;
-        ui->label_travelDistance->setText("("+QString::number(travel_distance)+"m)\n이동거리");
+        travel_distance += 5;   // 총 이동거리 계산하기
+        ui->label_travelDistance->setText("("+QString::number(travel_distance)+"m)\n이동거리");     // 총 이동거리 출력
 
-        drone_fuel -= 1;
+        drone_fuel -= 1;        // 연료 감소
         ui->progressBar_fuel->setValue(drone_fuel);
     }
     qDebug() << "Label position: (" << labelPos.x() << ", " << labelPos.y() << ")";
@@ -275,19 +285,15 @@ void Drone::moving_descent(int data)
 {
     QPoint labelPos = ui->lbl_drone->pos();
 
-    if(drone_height==0 & labelPos.x()==90 & labelPos.y()==230)
+    if(drone_height==0 && labelPos.x()==90 && labelPos.y()==230)
     {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, "Drone is back!", "Do you want to continue?", QMessageBox::Yes | QMessageBox::No);
-        if (reply == QMessageBox::Yes)
-        {
-            // 예 버튼을 눌렀을 때
-            // 계속 진행
-        }
+        if (reply == QMessageBox::Yes);     // 예 버튼 눌렀을 때 계속 진행
         else
         {
-            // 아니오 버튼을 눌렀을 때
-            // 랭킹 등록
+            // 아니오 버튼을 눌렀을 때 랭킹등록 페이지로 이동
+            ui->stackedWidget->setCurrentIndex(1);
         }
     }
     else if (drone_height == 0)
@@ -314,7 +320,7 @@ void Drone::moving_descent(int data)
 void Drone::on_btn_refuel_clicked()
 {
     QPoint labelPos = ui->lbl_drone->pos();
-    if(drone_height==0 & labelPos.x()==90 & labelPos.y()==230)
+    if((drone_height==0) && (labelPos.x()==90) && (labelPos.y()==230))
     {
         qDebug() << "refuel now...";
 
@@ -367,7 +373,7 @@ void Drone::enable_button_true()
 void Drone::check_position()
 {
     QPoint labelPos = ui->lbl_drone->pos();
-    if(drone_height==0 & labelPos.x()==90 & labelPos.y()==230)
+    if((drone_height==0) && (labelPos.x()==90) && (labelPos.y()==230))
         return;
     // 연료가 다 떨어졌을 때 드론 추락
     else if(ui->progressBar_fuel->value() == 0)
@@ -382,3 +388,28 @@ void Drone::check_position()
         ui->label_travelDistance->setText("("+QString::number(travel_distance)+"m)\n이동거리");
     }
 }
+
+// 랭킹 등록 이벤트
+void Drone::update_rank()
+{
+    qDebug() << ui->lineEdit_ranking->text();
+    // 랭킹 등록
+    // 드론 조종 페이지로 이동
+    QMessageBox::information(this, "Register Success", "your rank is registerd!");
+    ui->lineEdit_ranking->clear();
+    travel_distance = 0;
+    drone_fuel = 0;
+
+    ui->label_travelDistance->setText("("+QString::number(travel_distance)+"m)\n이동거리");
+    ui->progressBar_fuel->setValue(drone_fuel);
+
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+
+// 랭킹 등록 취소
+void Drone::on_btn_cancel_clicked()
+{
+    ui->stackedWidget->setCurrentIndex(0);
+}
+

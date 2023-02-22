@@ -73,6 +73,11 @@ private slots:
     // 연료가 0이 됐을 때 드론의 위치 어쩌고
     void check_position();
 
+    // 랭킹 등록 이벤트
+    void update_rank();
+
+    void on_btn_cancel_clicked();
+
 private:
     Ui::Drone *ui;
     Thread * thread;
