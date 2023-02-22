@@ -10,6 +10,7 @@
 #include <QPropertyAnimation>
 #include <QApplication>
 #include <QTimer>
+#include <QSqlDatabase>
 
 #include <iostream>
 #include <thread>
@@ -58,10 +59,26 @@ private slots:
     void on_btn_descent_pressed();
     void on_btn_descent_released();
 
+    // 연료 채우는 버튼
+    void on_btn_refuel_clicked();
+
+    // 연료 채우는 기능
+    void refuel(int data);
+
+    // 모든 버튼 비활성화 기능
+    void enable_button_false();
+    // 모든 버튼 활성화 기능
+    void enable_button_true();
+
+    // 연료가 0이 됐을 때 드론의 위치 어쩌고
+    void check_position();
+
 private:
     Ui::Drone *ui;
     Thread * thread;
     int drone_height = 0;
+    int drone_fuel = 0;
+    int travel_distance = 0;
 };
 
 
